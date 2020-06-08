@@ -9,8 +9,8 @@ const logger = new ILLog({
 </code>
 <p></p>
 <p><b>or</b></p>
-
-<code>const path = require("path")
+<code>
+const path = require("path")
   
 const logger = new ILLog({
    path: path.join(__dirname),
