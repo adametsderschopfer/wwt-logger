@@ -6,8 +6,7 @@ const logger = new ILLog({
    path: "./",
    action: "NEW POST",
 });
-</code>
-<p>or</p>
+</code><p>or</p>
 <code>const path = require("path")
   
 const logger = new ILLog({
