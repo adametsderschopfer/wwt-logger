@@ -1,6 +1,6 @@
 <h1>Logging in Node.js</h1>
 
-<p>Example:</p>
+<b>Example:</b>
 <code>
 const logger = new ILLog({
    path: "./",
@@ -8,7 +8,7 @@ const logger = new ILLog({
 });
 </code>
 <p></p>
-<p>or</p>
+<b>or</b>
 <code>const path = require("path")
   
 const logger = new ILLog({
