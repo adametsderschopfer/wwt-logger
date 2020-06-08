@@ -117,7 +117,4 @@ class ILLog {
   }
 }
 
-// const logger = new ILLog({
-//   path: "./src",
-//   action: "NEW POST",
-// });
+
