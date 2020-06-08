@@ -117,4 +117,4 @@ class ILLog {
   }
 }
 
-
+module.exports = ILLog
