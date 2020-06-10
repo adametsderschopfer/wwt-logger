@@ -12,8 +12,7 @@ const { fs, path } = require("./src/_modules");
 class ILLog {
   #config = {
     path: "",
-    action: "",
-    fileName: "",
+    action: ""
   };
 
   #dir = this.#config.path;
