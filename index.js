@@ -4,7 +4,7 @@
  * BY Vladislav Adamets <AV.STYLEDEV@GMAIL.COM>
  * GITHUB: https://github.com/adametsofficial
  */
-
+ 
 // modules
 const { fs, path } = require("./src/_modules");
 
