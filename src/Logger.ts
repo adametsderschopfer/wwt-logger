@@ -41,7 +41,17 @@ class Logger implements ILogger {
   }
 
   public async set(logType: string = "INFO", content: TContent, callBack?: (error: ErrorCb) => void) {
-    const logTypeToLow = `${logType.toString().toLocaleLowerCase()}.log`
+    if (!this.logType.hasOwnProperty(logType)) {
+      const error = new TypeError("The logType argument was not found in LogTypes, please check the types in the documentation!")
+
+      if (callBack) {
+        callBack(error)
+      }
+
+      return error
+    }
+
+    const logTypeToLow: string = `${logType.toString().toLocaleLowerCase()}.log`
 
     const template = this.logTemplate(logType, content)
     let isExist;
@@ -119,7 +129,7 @@ class Logger implements ILogger {
       })
     })
   }
-
+ 
   /**
    * (LogType) [(new Date.toUTCString())]: (Content) 
    * 
@@ -127,7 +137,7 @@ class Logger implements ILogger {
    * ERROR [Thu, 19 Nov 2020 19:14:58 GMT]: Something went wrong with the database connection
    * */  
   private logTemplate (logTypes: string = "INFO", content: TContent) {
-    return `${logTypes} [${this.date.toUTCString()}]: ${content}\n`
+    return `${logTypes} [${this.date.toUTCString()}]: ${content}\n-----------------------------------------------------------------------------------\n`
   } 
 
   /**
