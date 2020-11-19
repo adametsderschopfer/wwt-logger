@@ -41,12 +41,45 @@ class Logger implements ILogger {
   }
 
   public async set(logType: string = "INFO", content: TContent, callBack?: (error: ErrorCb) => void) {
-    const template = this.logTemplate(logType, content)
-    const isExist = await this.checkDirectoryExist(logType.toString().toLocaleLowerCase())
-    
-    console.log(isExist);
-    
+    const logTypeToLow = `${logType.toString().toLocaleLowerCase()}.log`
 
+    const template = this.logTemplate(logType, content)
+    let isExist;
+    let updatedContent: string = template;
+    let prevContent;
+
+    try {
+      isExist = await this.checkIsExist(logTypeToLow)
+    } catch (error) {
+      if (callBack) {
+        callBack(error)
+      }
+      throw error
+    }
+     
+    if (isExist) {
+      try {
+        prevContent = await this.read(logType);
+        updatedContent = prevContent + template
+      } catch (error) {
+        if (callBack) {
+          callBack(error)
+        }
+        throw error
+      }
+    }  
+
+    fs.writeFile(`${this.config.dir}\\${logTypeToLow}`, updatedContent, (err) => {
+      if (err) {
+        if (callBack) {
+          callBack(err)
+        }
+        throw Error(err.toString())
+      }
+    });
+    if (callBack) {
+      callBack(null)
+    }
     return this.instance
   }
 
@@ -54,7 +87,7 @@ class Logger implements ILogger {
    * Initialization func when Logger is declared 
    * */
   private async initialize() { 
-    let isExist = await this.checkDirectoryExist()
+    let isExist = await this.checkIsExist()
 
     if (!isExist) {
       let path = this.config.dir;
@@ -94,23 +127,23 @@ class Logger implements ILogger {
    * ERROR [Thu, 19 Nov 2020 19:14:58 GMT]: Something went wrong with the database connection
    * */  
   private logTemplate (logTypes: string = "INFO", content: TContent) {
-    return `${logTypes} [${this.date.toUTCString()}]: ${content} `
+    return `${logTypes} [${this.date.toUTCString()}]: ${content}\n`
   } 
 
   /**
-   * The checkDirectoryExist function was created
+   * The checkIsExist function was created
    * to check the input directory for existence.
    * 
-   * checkDirectoryExist => If this.config.dir is exist return True else if does not exist return false
+   * checkIsExist => If this.config.dir is exist return True else if does not exist return false
    * */ 
-  private async checkDirectoryExist(fileName?: PathLike): Promise<boolean> {
+  private async checkIsExist(fileName?: string): Promise<boolean> {    
     return new Promise((res, rej) => {      
-      fs.stat(fileName ? `${this.config.dir}/${fileName}` : this.config.dir  , function (err: ErrorCb, stats: Stats) {
+      fs.stat(fileName ? `${this.config.dir}\\${fileName}` : this.config.dir  , function (err: ErrorCb, stats: Stats) {
         if (err) {
           res(false)
           
           console.error(`The folder or file on the path was not found, so it was created.\n${!fileName ? err.path : err.path + ".log"}`);
-          return; 
+          return;  
         } 
         
         res(true)
@@ -118,11 +151,11 @@ class Logger implements ILogger {
     })
   }    
 } 
-
+ 
 const l = new Logger({
   dir: path.join(__dirname, "/logs")
 })
 
-  l.set(l.logType.FATAL, "Server is die!")
+  l.set(l.logType.ERROR, "Server is die!")
 
 export default Logger;
