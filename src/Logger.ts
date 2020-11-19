@@ -161,11 +161,5 @@ class Logger implements ILogger {
     })
   }    
 } 
- 
-const l = new Logger({
-  dir: path.join(__dirname, "/logs")
-})
-
-  l.set(l.logType.ERROR, "Server is die!")
 
 export default Logger;
