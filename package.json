@@ -4,22 +4,37 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --watch",
     "start": "tsc --watch",
-    "build": "tsc"
+    "build": "tsc "
   },
   "keywords": [
     "ts",
     "lib",
     "logger"
   ],
+ 
   "author": "Vladislav Adamets <AV.STYLEDEV@GMAIL.COM>",
   "license": "MIT",
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-transform-runtime": "^7.12.1",
+    "@babel/runtime": "^7.12.5",
+    "@types/express": "^4.17.9",
+    "@types/jest": "^26.0.15",
+    "@types/koa": "^2.11.6",
+    "jest": "^26.6.3",
     "nodemon": "^2.0.4",
-    "jest": "^26.6.3"
+    "ts-node": "^9.0.0"
   },
   "dependencies": {
-    "ts-node": "^9.0.0"
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-typescript": "^7.12.1",
+    "babel-jest": "^26.6.3",
+    "express": "^4.17.1",
+    "regenerator-runtime": "^0.13.7",
+    "ts-jest": "^26.4.4"
   }
 }
