@@ -1,6 +1,14 @@
-import { ILogger } from './interfaces';
-import { ErrorCb, LoggerConfig, PathLike, TContent } from './types';
-import { LogTypes } from "./enums";
+/// <reference types="node" />
+declare type PathLike = string | Buffer | URL;
+declare type LoggerConfig = {
+    dir: PathLike;
+};
+declare type TContent = string | Buffer | undefined;
+declare type ErrorCb = NodeJS.ErrnoException | null;
+interface ILogger {
+    get?: (path: PathLike, callback: (error: ErrorCb, content: TContent) => void) => void;
+    set?: (logCode: string, content: TContent, callBack: (error: ErrorCb) => void) => void;
+}
 declare class Logger implements ILogger {
     private config;
     private date;
@@ -40,5 +48,12 @@ declare class Logger implements ILogger {
      * checkIsExist => If this.config.dir is exist return True else if does not exist return false
      * */
     private checkIsExist;
+}
+declare enum LogTypes {
+    ERROR = "ERROR",
+    INFO = "INFO",
+    WARNING = "WARNING",
+    DEBUG = "DEBUG",
+    FATAL = "FATAL"
 }
 export default Logger;

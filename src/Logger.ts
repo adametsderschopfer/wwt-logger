@@ -1,14 +1,31 @@
-import { ILogger } from './interfaces';
-import { ErrorCb, LoggerConfig, PathLike, TContent } from './types';
-import { LogTypes } from "./enums"
-
 import { Stats } from 'fs';
 import path from 'path';
 import fs from 'fs';
 
+type PathLike = string | Buffer | URL
+type LoggerConfig = {
+  dir: PathLike,
+}
+type TContent = string | Buffer | undefined; 
+type ErrorCb = NodeJS.ErrnoException | null;
+
+interface ILogger {
+  get?: (
+    path: PathLike, 
+    callback: (error: ErrorCb, content: TContent) => void
+    ) => void; 
+  
+  set?: (
+    logCode: string,
+    content: TContent, 
+    callBack: (error: ErrorCb) => void
+  ) => void
+}
+
+
 class Logger implements ILogger {
   private config: LoggerConfig;
-  private date: Date
+  private date: Date = new Date();
   private instance: Logger = this;
 
   public readonly logType = LogTypes;
@@ -24,8 +41,6 @@ class Logger implements ILogger {
   public constructor(config: LoggerConfig = { dir: path.join(__dirname, '/logs') }) {
     this.config = config;
     this.initialize();
-
-    this.date = new Date();
   }
 
   public async get(fileName: PathLike, callBack: (error: ErrorCb, data: TContent) => void) {
@@ -161,5 +176,13 @@ class Logger implements ILogger {
     })
   }    
 } 
+
+enum LogTypes {
+  ERROR = "ERROR",
+  INFO = "INFO",
+  WARNING = "WARNING",
+  DEBUG = "DEBUG",
+  FATAL = "FATAL"
+}
 
 export default Logger;

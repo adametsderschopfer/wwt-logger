@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const enums_1 = require("./enums");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 class Logger {
@@ -16,11 +15,11 @@ class Logger {
      *  config.dir => __dirname
      * */
     constructor(config = { dir: path_1.default.join(__dirname, '/logs') }) {
+        this.date = new Date();
         this.instance = this;
-        this.logType = enums_1.LogTypes;
+        this.logType = LogTypes;
         this.config = config;
         this.initialize();
-        this.date = new Date();
     }
     async get(fileName, callBack) {
         try {
@@ -137,8 +136,12 @@ class Logger {
         });
     }
 }
-const l = new Logger({
-    dir: path_1.default.join(__dirname, "/logs")
-});
-l.set(l.logType.ERROR, "Server is die!");
+var LogTypes;
+(function (LogTypes) {
+    LogTypes["ERROR"] = "ERROR";
+    LogTypes["INFO"] = "INFO";
+    LogTypes["WARNING"] = "WARNING";
+    LogTypes["DEBUG"] = "DEBUG";
+    LogTypes["FATAL"] = "FATAL";
+})(LogTypes || (LogTypes = {}));
 exports.default = Logger;
