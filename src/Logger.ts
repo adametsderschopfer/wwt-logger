@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 type PathLike = string | Buffer | URL
-type LoggerConfig = {
+export type LoggerConfig = {
   dir: PathLike,
 }
 type TContent = string | Buffer | undefined; 
@@ -38,7 +38,11 @@ class Logger implements ILogger {
    * 
    *  config.dir => __dirname
    * */
-  public constructor(config: LoggerConfig = { dir: path.join(__dirname, '/logs') }) {
+  public constructor(config: LoggerConfig) {
+    if (!config.dir) {
+      throw SyntaxError("Directory not found or not specified")
+    }
+
     this.config = config;
     this.initialize();
   }
@@ -57,13 +61,21 @@ class Logger implements ILogger {
 
   public async set(logType: string = "INFO", content: TContent, callBack?: (error: ErrorCb) => void) {
     if (!this.logType.hasOwnProperty(logType)) {
-      const error = new TypeError("The logType argument was not found in LogTypes, please check the types in the documentation!")
+      const errorLogType = new TypeError("The logType argument was not found in LogTypes, please check the types in the documentation!")
 
       if (callBack) {
-        callBack(error)
+        callBack(errorLogType)
       }
 
-      return error
+      return errorLogType
+    }
+
+    if (!content) {
+      if (callBack) {
+        callBack(Error("Content not enterd"))
+      }
+
+      throw Error("Content not enterd")
     }
 
     const logTypeToLow: string = `${logType.toString().toLocaleLowerCase()}.log`
@@ -92,8 +104,12 @@ class Logger implements ILogger {
         }
         throw error
       }
-    }  
+    } 
 
+    updatedContent = updatedContent.split(" ").join(" ");
+    updatedContent = updatedContent.split("\n").join("") + "\n";
+    updatedContent = updatedContent.split("-----------------------------------------------------------------------------------").join("\n-----------------------------------------------------------------------------------\n") + "\n"
+    
     fs.writeFile(`${this.config.dir}\\${logTypeToLow}`, updatedContent, (err) => {
       if (err) {
         if (callBack) {
@@ -113,7 +129,7 @@ class Logger implements ILogger {
    * */
   private async initialize() { 
     let isExist = await this.checkIsExist()
-
+    
     if (!isExist) {
       let path = this.config.dir;
 
@@ -161,13 +177,14 @@ class Logger implements ILogger {
    * 
    * checkIsExist => If this.config.dir is exist return True else if does not exist return false
    * */ 
-  private async checkIsExist(fileName?: string): Promise<boolean> {    
+  private async checkIsExist(fileName?: string): Promise<boolean> {   
+         
     return new Promise((res, rej) => {      
       fs.stat(fileName ? `${this.config.dir}\\${fileName}` : this.config.dir  , function (err: ErrorCb, stats: Stats) {
         if (err) {
           res(false)
           
-          console.error(`The folder or file on the path was not found, so it was created.\n${!fileName ? err.path : err.path + ".log"}`);
+          console.error(`The folder or file on the path was not found, so it was created.\n${!fileName ? err.path : err.path}`);
           return;  
         } 
         

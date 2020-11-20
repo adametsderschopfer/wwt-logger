@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 class Logger {
     /**
@@ -14,10 +13,13 @@ class Logger {
      *
      *  config.dir => __dirname
      * */
-    constructor(config = { dir: path_1.default.join(__dirname, '/logs') }) {
+    constructor(config) {
         this.date = new Date();
         this.instance = this;
         this.logType = LogTypes;
+        if (!config.dir) {
+            throw SyntaxError("Directory not found or not specified");
+        }
         this.config = config;
         this.initialize();
     }
@@ -33,11 +35,17 @@ class Logger {
     }
     async set(logType = "INFO", content, callBack) {
         if (!this.logType.hasOwnProperty(logType)) {
-            const error = new TypeError("The logType argument was not found in LogTypes, please check the types in the documentation!");
+            const errorLogType = new TypeError("The logType argument was not found in LogTypes, please check the types in the documentation!");
             if (callBack) {
-                callBack(error);
+                callBack(errorLogType);
             }
-            return error;
+            return errorLogType;
+        }
+        if (!content) {
+            if (callBack) {
+                callBack(Error("Content not enterd"));
+            }
+            throw Error("Content not enterd");
         }
         const logTypeToLow = `${logType.toString().toLocaleLowerCase()}.log`;
         const template = this.logTemplate(logType, content);
@@ -65,6 +73,9 @@ class Logger {
                 throw error;
             }
         }
+        updatedContent = updatedContent.split(" ").join(" ");
+        updatedContent = updatedContent.split("\n").join("") + "\n";
+        updatedContent = updatedContent.split("-----------------------------------------------------------------------------------").join("\n-----------------------------------------------------------------------------------\n") + "\n";
         fs_1.default.writeFile(`${this.config.dir}\\${logTypeToLow}`, updatedContent, (err) => {
             if (err) {
                 if (callBack) {
@@ -128,7 +139,7 @@ class Logger {
             fs_1.default.stat(fileName ? `${this.config.dir}\\${fileName}` : this.config.dir, function (err, stats) {
                 if (err) {
                     res(false);
-                    console.error(`The folder or file on the path was not found, so it was created.\n${!fileName ? err.path : err.path + ".log"}`);
+                    console.error(`The folder or file on the path was not found, so it was created.\n${!fileName ? err.path : err.path}`);
                     return;
                 }
                 res(true);
