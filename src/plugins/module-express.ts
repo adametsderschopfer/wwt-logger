@@ -1,6 +1,5 @@
 import Logger from "../Logger"
 import { Request, Response, NextFunction } from "express"
-import express from "express"
 import { LoggerConfig } from "../types"
 
 interface RequestWithLogger extends Request {
