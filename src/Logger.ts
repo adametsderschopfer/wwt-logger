@@ -181,7 +181,7 @@ class Logger implements ILogger {
    * ERROR [Thu, 19 Nov 2020 19:14:58 GMT]: Something went wrong with the database connection
    * */  
   private logTemplate (logTypes: string = "INFO", content: TContent) {
-    return `${logTypes} [${this.date.toUTCString()}]: ${content}\n${puncture}\n`
+    return `${logTypes} [${this.date.toUTCString()}]: ${content}` + "\n" + puncture + "\n"
   } 
 
   /**

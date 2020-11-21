@@ -133,7 +133,7 @@ class Logger {
      * ERROR [Thu, 19 Nov 2020 19:14:58 GMT]: Something went wrong with the database connection
      * */
     logTemplate(logTypes = "INFO", content) {
-        return `${logTypes} [${this.date.toUTCString()}]: ${content}\n${puncture}\n`;
+        return `${logTypes} [${this.date.toUTCString()}]: ${content}` + "\n" + puncture + "\n";
     }
     /**
      * The checkIsExist function was created
