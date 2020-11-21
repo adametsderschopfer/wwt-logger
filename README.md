@@ -6,7 +6,7 @@ The logger module was created in order to log specific information. The template
 #### An example of using the logger: 
 ```
 const path = require("path");
-const Logger = require("wwt-logger)
+const {Logger} = require("wwt-logger)
 
 const logger_instance = new Logger({ dir: path.join(__dirname, "logs") });
 const {logType} = logger_instance
@@ -19,6 +19,22 @@ To get the file, just use the get method and we can use the built-in types:
 ```
 const {logType} = logger_instance
 logger_instance.get(logType.ERROR, (err, data) => { callback })
+```
+
+#### An example of using the logger with Express.js: 
+
+```
+const {ExpressLogger} = require("wwt-logger)
+...
+const loggerConfig = { dir: "your directory" }
+
+app
+  .use(ExpressLogger(loggerConfig))
+  .use((req) => {
+    req.logger.logType // log types
+    req.logger.get(...)
+    req.logger.set(...)
+  });
 ```
 
 **All logger types:**
