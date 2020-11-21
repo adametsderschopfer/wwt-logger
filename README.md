@@ -6,7 +6,7 @@ The logger module was created in order to log specific information. The template
 #### An example of using the logger: 
 ```
 const path = require("path");
-const {Logger} = require("wwt-logger)
+const Logger = require("@addesign/wwt-logger)
 
 const logger_instance = new Logger({ dir: path.join(__dirname, "logs") });
 const {logType} = logger_instance
@@ -21,12 +21,27 @@ const {logType} = logger_instance
 logger_instance.get(logType.ERROR, (err, data) => { callback })
 ```
 
+#### An example of using a logger to write all logs to one file:
+```
+const path = require("path");
+const Logger = require("@addesign/wwt-logger")
+const loggerConfig = { 
+    dir: path.join(__dirname, "your directory"),
+    singleFile: true, 
+    singleFileName: "logsFileExample"
+}
+
+const instanceLogger = new Logger(loggerConfig)
+```
+If **singleFile** is specified, then **singleFileName** must be specified.
+The **singleFileName** property in the LoggerConfig must not contain **".log"** at the end of the file name.
 #### An example of using the logger with Express.js: 
 
 ```
-const {ExpressLogger} = require("wwt-logger)
+const path = require("path");
+const ExpressLogger = require("@addesign/wwt-logger/express")
 ...
-const loggerConfig = { dir: "your directory" }
+const loggerConfig = { dir: path.join(__dirname, "your directory") }
 
 app
   .use(ExpressLogger(loggerConfig))
