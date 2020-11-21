@@ -2,9 +2,13 @@ import { Stats } from 'fs';
 import path from 'path';
 import fs from 'fs';
 
-type PathLike = string | Buffer | URL
+const puncture = `-----------------------------------------------------------------------------------`
+
+type PathLike = string | Buffer 
 export type LoggerConfig = {
-  dir: PathLike,
+  dir: PathLike
+  singleFile: Boolean
+  singleFileName: string
 }
 type TContent = string | Buffer | undefined; 
 type ErrorCb = NodeJS.ErrnoException | null;
@@ -38,12 +42,19 @@ class Logger implements ILogger {
    * 
    *  config.dir => __dirname
    * */
-  public constructor(config: LoggerConfig) {
-    if (!config.dir) {
+  public constructor(config: LoggerConfig = {dir: "", singleFile: false, singleFileName: ""}) {
+    if (!config.dir.length) {
       throw SyntaxError("Directory not found or not specified")
     }
 
     this.config = config;
+
+    if (this.config.singleFile) {
+      if (!this.config.singleFileName.length) {
+        throw SyntaxError("If you specified the singleFile parameter, then you must specify the singleFileName parameter")
+      }
+    }
+
     this.initialize();
   }
 
@@ -78,7 +89,9 @@ class Logger implements ILogger {
       throw Error("Content not enterd")
     }
 
-    const logTypeToLow: string = `${logType.toString().toLocaleLowerCase()}.log`
+    const {singleFile, singleFileName} = this.config
+
+    const logTypeToLow: string = !singleFile ? `${logType.toString().toLocaleLowerCase()}.log` : `${singleFileName}.log`
 
     const template = this.logTemplate(logType, content)
     let isExist;
@@ -96,7 +109,7 @@ class Logger implements ILogger {
      
     if (isExist) {
       try {
-        prevContent = await this.read(logType);
+        prevContent = await this.read(!singleFile ? logType : singleFileName);
         updatedContent = prevContent + template
       } catch (error) {
         if (callBack) {
@@ -108,7 +121,7 @@ class Logger implements ILogger {
 
     updatedContent = updatedContent.split(" ").join(" ");
     updatedContent = updatedContent.split("\n").join("") + "\n";
-    updatedContent = updatedContent.split("-----------------------------------------------------------------------------------").join("\n-----------------------------------------------------------------------------------\n") + "\n"
+    updatedContent = updatedContent.split(puncture).join("\n"+puncture+"\n") + "\n"
     
     fs.writeFile(`${this.config.dir}\\${logTypeToLow}`, updatedContent, (err) => {
       if (err) {
@@ -168,7 +181,7 @@ class Logger implements ILogger {
    * ERROR [Thu, 19 Nov 2020 19:14:58 GMT]: Something went wrong with the database connection
    * */  
   private logTemplate (logTypes: string = "INFO", content: TContent) {
-    return `${logTypes} [${this.date.toUTCString()}]: ${content}\n-----------------------------------------------------------------------------------\n`
+    return `${logTypes} [${this.date.toUTCString()}]: ${content}\n${puncture}\n`
   } 
 
   /**

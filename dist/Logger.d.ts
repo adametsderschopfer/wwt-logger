@@ -1,7 +1,9 @@
 /// <reference types="node" />
-declare type PathLike = string | Buffer | URL;
+declare type PathLike = string | Buffer;
 export declare type LoggerConfig = {
     dir: PathLike;
+    singleFile: Boolean;
+    singleFileName: string;
 };
 declare type TContent = string | Buffer | undefined;
 declare type ErrorCb = NodeJS.ErrnoException | null;
@@ -22,9 +24,9 @@ declare class Logger implements ILogger {
      *
      *  config.dir => __dirname
      * */
-    constructor(config: LoggerConfig);
+    constructor(config?: LoggerConfig);
     get(fileName: PathLike, callBack: (error: ErrorCb, data: TContent) => void): Promise<Logger>;
-    set(logType: string | undefined, content: TContent, callBack?: (error: ErrorCb) => void): Promise<Logger | TypeError>;
+    set(logType: string | undefined, content: TContent, callBack?: (error: ErrorCb) => void): Promise<TypeError | Logger>;
     /**
      * Initialization func when Logger is declared
      * */

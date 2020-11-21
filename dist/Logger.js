@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
+const puncture = `-----------------------------------------------------------------------------------`;
 class Logger {
     /**
      *  If the path where the folder is not specified in the config
@@ -13,14 +14,19 @@ class Logger {
      *
      *  config.dir => __dirname
      * */
-    constructor(config) {
+    constructor(config = { dir: "", singleFile: false, singleFileName: "" }) {
         this.date = new Date();
         this.instance = this;
         this.logType = LogTypes;
-        if (!config.dir) {
+        if (!config.dir.length) {
             throw SyntaxError("Directory not found or not specified");
         }
         this.config = config;
+        if (this.config.singleFile) {
+            if (!this.config.singleFileName.length) {
+                throw SyntaxError("If you specified the singleFile parameter, then you must specify the singleFileName parameter");
+            }
+        }
         this.initialize();
     }
     async get(fileName, callBack) {
@@ -47,7 +53,8 @@ class Logger {
             }
             throw Error("Content not enterd");
         }
-        const logTypeToLow = `${logType.toString().toLocaleLowerCase()}.log`;
+        const { singleFile, singleFileName } = this.config;
+        const logTypeToLow = !singleFile ? `${logType.toString().toLocaleLowerCase()}.log` : `${singleFileName}.log`;
         const template = this.logTemplate(logType, content);
         let isExist;
         let updatedContent = template;
@@ -63,7 +70,7 @@ class Logger {
         }
         if (isExist) {
             try {
-                prevContent = await this.read(logType);
+                prevContent = await this.read(!singleFile ? logType : singleFileName);
                 updatedContent = prevContent + template;
             }
             catch (error) {
@@ -75,7 +82,7 @@ class Logger {
         }
         updatedContent = updatedContent.split(" ").join(" ");
         updatedContent = updatedContent.split("\n").join("") + "\n";
-        updatedContent = updatedContent.split("-----------------------------------------------------------------------------------").join("\n-----------------------------------------------------------------------------------\n") + "\n";
+        updatedContent = updatedContent.split(puncture).join("\n" + puncture + "\n") + "\n";
         fs_1.default.writeFile(`${this.config.dir}\\${logTypeToLow}`, updatedContent, (err) => {
             if (err) {
                 if (callBack) {
@@ -126,7 +133,7 @@ class Logger {
      * ERROR [Thu, 19 Nov 2020 19:14:58 GMT]: Something went wrong with the database connection
      * */
     logTemplate(logTypes = "INFO", content) {
-        return `${logTypes} [${this.date.toUTCString()}]: ${content}\n-----------------------------------------------------------------------------------\n`;
+        return `${logTypes} [${this.date.toUTCString()}]: ${content}\n${puncture}\n`;
     }
     /**
      * The checkIsExist function was created
