@@ -3,6 +3,10 @@ The logger module was created in order to log specific information. The template
 >**Example**: 
 >&nbsp;&nbsp;&nbsp;ERROR [Thu, 19 Nov 2020 19:14:58 GMT]: Something went wrong with the database connection
 
+### Installation :
+>npm install **@addesign/wwt-logger**
+NPM: https://www.npmjs.com/package/@addesign/wwt-logger
+
 #### An example of using the logger: 
 ```
 const path = require("path");
